@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import br.com.eduardomaxwell.netflixremake.databinding.ActivityMainBinding;
+import br.com.eduardomaxwell.netflixremake.model.Category;
 import br.com.eduardomaxwell.netflixremake.model.Movie;
 
 public class MainActivity extends AppCompatActivity {
@@ -28,25 +29,64 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        List<Movie> movies = new ArrayList<>();
-        for (int i = 0; i < 30; i++) {
-            Movie movie = new Movie();
-            movie.setCoverUrl(R.drawable.movie);
-            movies.add(movie);
+        List<Category> categories = new ArrayList<>();
+        for (int j = 0; j < 10; j++) {
+            Category category = new Category();
+            category.setName("Category " + j);
+
+            List<Movie> movies = new ArrayList<>();
+            for (int i = 0; i < 30; i++) {
+                Movie movie = new Movie();
+//                movie.setCoverUrl(R.drawable.movie);
+                movies.add(movie);
+            }
+            category.setMovies(movies);
+            categories.add(category);
         }
-        mainAdapter = new MainAdapter(movies);
-        binding.recyclerMain.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
+
+        mainAdapter = new MainAdapter(categories);
+        binding.recyclerMain.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
         binding.recyclerMain.setAdapter(mainAdapter);
 
     }
 
 
     //    MAIN ADAPTER
-    private class MainAdapter extends RecyclerView.Adapter<MovieHolder> {
+    private class MainAdapter extends RecyclerView.Adapter<CategoryHolder> {
+
+        private final List<Category> categories;
+
+        private MainAdapter(List<Category> categories) {
+            this.categories = categories;
+        }
+
+        @NonNull
+        @Override
+        public CategoryHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            return new CategoryHolder(getLayoutInflater().inflate(R.layout.category_item, parent, false));
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull CategoryHolder holder, int position) {
+            Category category = categories.get(position);
+            holder.title.setText(category.getName());
+            holder.recyclerMovie.setAdapter(new MovieAdapter(category.getMovies()));
+            holder.recyclerMovie.setLayoutManager(new LinearLayoutManager(getBaseContext(), RecyclerView.HORIZONTAL, false));
+
+        }
+
+        @Override
+        public int getItemCount() {
+            return categories.size();
+        }
+    }
+
+    //    MOVIE ADAPTER
+    private class MovieAdapter extends RecyclerView.Adapter<MovieHolder> {
 
         private final List<Movie> movies;
 
-        private MainAdapter(List<Movie> movies) {
+        private MovieAdapter(List<Movie> movies) {
             this.movies = movies;
         }
 
@@ -59,12 +99,25 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(@NonNull MovieHolder holder, int position) {
             Movie movie = movies.get(position);
-            holder.imgCover.setImageResource(movie.getCoverUrl());
+//            holder.imgCover.setImageResource(movie.getCoverUrl());
         }
 
         @Override
         public int getItemCount() {
             return movies.size();
+        }
+    }
+
+
+    private static class CategoryHolder extends RecyclerView.ViewHolder {
+
+        TextView title;
+        RecyclerView recyclerMovie;
+
+        public CategoryHolder(@NonNull View itemView) {
+            super(itemView);
+            title = itemView.findViewById(R.id.txtTitleCategory);
+            recyclerMovie = itemView.findViewById(R.id.rvMovie);
         }
     }
 
