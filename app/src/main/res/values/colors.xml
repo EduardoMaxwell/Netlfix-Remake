@@ -5,6 +5,8 @@
     <color name="black_secondary">#000000</color>
 
     <color name="grayDark">#222222</color>
+    <color name="grayLight">#ddd</color>
+
 
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>

@@ -1,3 +1,7 @@
 <resources>
-    <string name="app_name">NetflixRemake</string>
+    <string name="app_name">Netflix</string>
+    <string name="cast">Elenco: %1$s</string>
+    <string name="similar">Opções semelhantes</string>
+    <string name="movie_desc">\"O jovem Bruce Wayne cai em um poço e é atacado por morcegos. Bruce acorda de um pesadelo sobre seu passado e descobre que é prisioneiro no Butão. É apresentado a Henri Ducard, que fala por Ra\'s Al Ghul, líder da Liga das Sombras, e o convida para ser treinado pela elite de vigilantes. A narrativa retorna a infância de Bruce, para noite quando seus pais são assassinados por Joe Chill. Chill é preso e Bruce é levado para casa onde é criado pelo mordomo de sua família, Alfred Pennyworth. \"</string>
+    <string name="movie_title">Batman Begins</string>
 </resources>
