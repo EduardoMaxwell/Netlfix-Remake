@@ -35,9 +35,9 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
-            android:layout_width="96dp"
-            android:layout_height="96dp"
-            android:src="@drawable/ic_play_arrow"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:src="@drawable/play_button"
             app:layout_constraintBottom_toBottomOf="@id/ivCover"
             app:layout_constraintEnd_toEndOf="@id/ivCover"
             app:layout_constraintStart_toStartOf="@id/ivCover"

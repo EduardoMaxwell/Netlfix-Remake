@@ -7,8 +7,8 @@
     <item android:id="@+id/gradient_shadow">
         <shape>
             <gradient
-                android:endColor="#EF000000"
-                android:startColor="#EF000000"
+                android:endColor="#FF111111"
+                android:startColor="#FF111111"
                 android:angle="90"
                 android:centerColor="#00000000" />
         </shape>
