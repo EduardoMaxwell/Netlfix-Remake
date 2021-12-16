@@ -98,9 +98,11 @@ public class MainActivity extends AppCompatActivity implements CategoryTask.Cate
 
         @Override
         public void onClick(int position) {
-            Intent intent = new Intent(MainActivity.this, MovieActivity.class);
-            intent.putExtra("id", movies.get(position).getId());
-            startActivity(intent);
+            if (movies.get(position).getId() <= 3) {
+                Intent intent = new Intent(MainActivity.this, MovieActivity.class);
+                intent.putExtra("id", movies.get(position).getId());
+                startActivity(intent);
+            }
         }
 
         @NonNull

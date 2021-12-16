@@ -40,14 +40,6 @@ public class MovieActivity extends AppCompatActivity implements MovieDetailTask.
             getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_back);
             getSupportActionBar().setTitle(null);
         }
-
-        LayerDrawable drawable = (LayerDrawable) ContextCompat.getDrawable(this, R.drawable.shadows);
-        if (drawable != null) {
-            Drawable movieCover = ContextCompat.getDrawable(this, R.drawable.movie_4);
-            drawable.setDrawableByLayerId(R.id.cover_drawable, movieCover);
-            ((ImageView) findViewById(R.id.ivCover)).setImageDrawable(drawable);
-        }
-
         List<Movie> movies = new ArrayList<>();
 
         setupRecycler(movies);
@@ -77,6 +69,10 @@ public class MovieActivity extends AppCompatActivity implements MovieDetailTask.
         binding.txtCastMovie.setText(movieDetail.getMovie().getCast());
 
         adapter.setMovies(movieDetail.getMoviesSimilar());
+
+        ImageDownloaderTask imageDownloaderTask = new ImageDownloaderTask(binding.ivCover);
+        imageDownloaderTask.setShadowEnabled(true);
+        imageDownloaderTask.execute(movieDetail.getMovie().getCoverUrl());
         adapter.notifyDataSetChanged();
         Log.d("Teste", movieDetail.toString());
     }
