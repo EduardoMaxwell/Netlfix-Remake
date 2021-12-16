@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -18,10 +19,14 @@ import java.util.List;
 
 import br.com.eduardomaxwell.netflixremake.databinding.ActivityMovieBinding;
 import br.com.eduardomaxwell.netflixremake.model.Movie;
+import br.com.eduardomaxwell.netflixremake.model.MovieDetail;
+import br.com.eduardomaxwell.netflixremake.util.ImageDownloaderTask;
+import br.com.eduardomaxwell.netflixremake.util.MovieDetailTask;
 
-public class MovieActivity extends AppCompatActivity {
+public class MovieActivity extends AppCompatActivity implements MovieDetailTask.MovieDetailLoader {
 
     private ActivityMovieBinding binding;
+    private MovieAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,45 +48,63 @@ public class MovieActivity extends AppCompatActivity {
             ((ImageView) findViewById(R.id.ivCover)).setImageDrawable(drawable);
         }
 
-
-        binding.txtMovieTitle.setText(R.string.movie_title);
-        binding.txtDescMovie.setText(R.string.movie_desc);
-        binding.txtCastMovie.setText(getString(R.string.cast, "Christian Bale " + ",Cillian Murphy" + ",Gary Oldman" + ",Katie Holmes" + ",Liam Neeson" + ",Morgan Freeman" + ",Tom Wilkinson" + ",Michael Caine"));
-
-
         List<Movie> movies = new ArrayList<>();
-        for (int i = 0; i < 30; i++) {
-            Movie movie = new Movie();
-            movies.add(movie);
-        }
+
         setupRecycler(movies);
 
     }
 
     private void setupRecycler(List<Movie> movies) {
-        binding.rvSimilar.setAdapter(new MovieAdapter(movies));
+        adapter = new MovieAdapter(movies);
+        binding.rvSimilar.setAdapter(adapter);
         binding.rvSimilar.setLayoutManager(new GridLayoutManager(this, 3));
+
+
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            int id = extras.getInt("id");
+
+            MovieDetailTask movieDetailTask = new MovieDetailTask(this);
+            movieDetailTask.setMovieDetailLoader(this);
+            movieDetailTask.execute("https://tiagoaguiar.co/api/netflix/" + id);
+        }
+    }
+
+    @Override
+    public void onResult(MovieDetail movieDetail) {
+        binding.txtMovieTitle.setText(movieDetail.getMovie().getTitle());
+        binding.txtDescMovie.setText(movieDetail.getMovie().getDesc());
+        binding.txtCastMovie.setText(movieDetail.getMovie().getCast());
+
+        adapter.setMovies(movieDetail.getMoviesSimilar());
+        adapter.notifyDataSetChanged();
+        Log.d("Teste", movieDetail.toString());
     }
 
     //    MOVIE ADAPTER
     private class MovieAdapter extends RecyclerView.Adapter<MovieActivity.MovieHolder> {
 
-        private final List<Movie> movies;
+        private List<Movie> movies;
 
         private MovieAdapter(List<Movie> movies) {
             this.movies = movies;
         }
 
+        public void setMovies(List<Movie> movies) {
+            this.movies.clear();
+            this.movies.addAll(movies);
+        }
+
         @NonNull
         @Override
-        public MovieActivity.MovieHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        public MovieHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             return new MovieActivity.MovieHolder(getLayoutInflater().inflate(R.layout.movie_item_similar, parent, false));
         }
 
         @Override
         public void onBindViewHolder(@NonNull MovieActivity.MovieHolder holder, int position) {
             Movie movie = movies.get(position);
-//            holder.imgCover.setImageResource(movie.getCoverUrl());
+            new ImageDownloaderTask(holder.imgCover).execute(movie.getCoverUrl());
         }
 
         @Override
