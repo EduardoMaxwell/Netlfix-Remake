@@ -18,6 +18,7 @@ import br.com.eduardomaxwell.netflixremake.databinding.ActivityMainBinding;
 import br.com.eduardomaxwell.netflixremake.model.Category;
 import br.com.eduardomaxwell.netflixremake.model.Movie;
 import br.com.eduardomaxwell.netflixremake.util.CategoryTask;
+import br.com.eduardomaxwell.netflixremake.util.ImageDownloaderTask;
 
 public class MainActivity extends AppCompatActivity implements CategoryTask.CategoryLoader {
 
@@ -102,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements CategoryTask.Cate
         @Override
         public void onBindViewHolder(@NonNull MovieHolder holder, int position) {
             Movie movie = movies.get(position);
-//            holder.imgCover.setImageResource(movie.getCoverUrl());
+            new ImageDownloaderTask(holder.imgCover).execute(movie.getCoverUrl());
         }
 
         @Override
