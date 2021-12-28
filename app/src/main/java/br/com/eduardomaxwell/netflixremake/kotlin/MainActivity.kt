@@ -1,11 +1,13 @@
 package br.com.eduardomaxwell.netflixremake.kotlin
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import br.com.eduardomaxwell.netflixremake.MovieActivity
 import br.com.eduardomaxwell.netflixremake.R
 import br.com.eduardomaxwell.netflixremake.databinding.ActivityMainBinding
 import br.com.eduardomaxwell.netflixremake.databinding.CategoryItemBinding
@@ -30,9 +32,9 @@ class MainActivity : AppCompatActivity() {
         binding.recyclerMain.layoutManager = LinearLayoutManager(this)
 
         val categoryTask = CategoryTask(this)
-        categoryTask.setCategoryLoader { categories1 ->
+        categoryTask.setCategoryLoader {
             mainAdapter.categories.clear()
-            mainAdapter.categories.addAll(categories1)
+            mainAdapter.categories.addAll(it)
             mainAdapter.notifyDataSetChanged()
         }
         categoryTask.execute("https://tiagoaguiar.co/api/netflix/home")
@@ -55,8 +57,17 @@ class MainActivity : AppCompatActivity() {
 
     private inner class MovieAdapter(val movies: List<Movie>) :
         RecyclerView.Adapter<MovieHolder>() {
+
+        val onClick: ((Int) -> Unit)? = { position ->
+            if (movies[position].id <= 3) {
+                val intent = Intent(this@MainActivity, MovieActivity::class.java)
+                intent.putExtra("id", movies[position].id)
+                startActivity(intent)
+            }
+        }
+
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieHolder {
-            return MovieHolder(layoutInflater.inflate(R.layout.movie_item, parent, false))
+            return MovieHolder(layoutInflater.inflate(R.layout.movie_item, parent, false), onClick)
         }
 
         override fun onBindViewHolder(holder: MovieHolder, position: Int) {
@@ -78,13 +89,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private class MovieHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    private class MovieHolder(itemView: View, val onClick: ((Int) -> Unit)?) :
+        RecyclerView.ViewHolder(itemView) {
         val binding = MovieItemBinding.bind(itemView)
         fun bind(movie: Movie) {
             ImageDownloaderTask(binding.ivCover)
                 .execute(movie.coverUrl)
             binding.ivCover.setOnClickListener {
-
+                onClick?.invoke(adapterPosition)
             }
         }
     }
