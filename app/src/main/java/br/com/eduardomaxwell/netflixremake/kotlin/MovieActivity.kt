@@ -1,19 +1,26 @@
 package br.com.eduardomaxwell.netflixremake.kotlin
 
+import android.graphics.drawable.Drawable
+import android.graphics.drawable.LayerDrawable
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import br.com.eduardomaxwell.netflixremake.R
 import br.com.eduardomaxwell.netflixremake.databinding.ActivityMovieBinding
 import br.com.eduardomaxwell.netflixremake.databinding.MovieItemBinding
 import br.com.eduardomaxwell.netflixremake.model.Movie
-import br.com.eduardomaxwell.netflixremake.util.ImageDownloaderTask
 import br.com.eduardomaxwell.netflixremake.util.MovieDetailTask
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.DrawableImageViewTarget
+import com.bumptech.glide.request.target.Target
 
 class MovieActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMovieBinding
@@ -33,12 +40,43 @@ class MovieActivity : AppCompatActivity() {
                     txtDescMovie.text = movieDetail.movie.desc
                     txtCastMovie.text = getString(R.string.cast, movieDetail.movie.title)
 
-                    ImageDownloaderTask(binding.ivCover).apply {
-                        setShadowEnabled(true)
-                        execute(movieDetail.movie.coverUrl)
-                    }
+                    Glide.with(this@MovieActivity)
+                        .load(movieDetail.movie.coverUrl)
+                        .listener(object : RequestListener<Drawable> {
+                            override fun onLoadFailed(
+                                e: GlideException?,
+                                model: Any?,
+                                target: Target<Drawable>?,
+                                isFirstResource: Boolean
+                            ): Boolean {
+                                return true
+                            }
+
+                            override fun onResourceReady(
+                                resource: Drawable?,
+                                model: Any?,
+                                target: Target<Drawable>?,
+                                dataSource: DataSource?,
+                                isFirstResource: Boolean
+                            ): Boolean {
+                                val drawable: LayerDrawable? = ContextCompat.getDrawable(
+                                    baseContext,
+                                    R.drawable.shadows
+                                ) as LayerDrawable
+
+                                drawable?.let {
+                                    drawable.setDrawableByLayerId(R.id.cover_drawable, resource)
+                                    (target as DrawableImageViewTarget).view.setImageDrawable(drawable)
+                                }
+                                return true
+                            }
+
+                        })
+                        .placeholder(R.drawable.placeholder_bg)
+                        .into(binding.ivCover)
+
                     movieAdapter.movies.clear()
-                    movieAdapter.movies.addAll(movieDetail.moviesSimilar)
+                    movieAdapter.movies.addAll(movieDetail.similarMovies)
                     movieAdapter.notifyDataSetChanged()
                 }
             }
@@ -83,7 +121,10 @@ class MovieActivity : AppCompatActivity() {
 
         fun bind(movie: Movie) {
             binding.apply {
-                ImageDownloaderTask(ivCover).execute(movie.coverUrl)
+                Glide.with(itemView.context)
+                    .load(movie.coverUrl)
+                    .placeholder(R.drawable.placeholder_bg)
+                    .into(binding.ivCover)
             }
         }
     }

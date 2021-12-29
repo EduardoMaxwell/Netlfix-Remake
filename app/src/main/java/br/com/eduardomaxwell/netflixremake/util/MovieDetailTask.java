@@ -20,7 +20,6 @@ import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
 
-import br.com.eduardomaxwell.netflixremake.model.Category;
 import br.com.eduardomaxwell.netflixremake.model.Movie;
 import br.com.eduardomaxwell.netflixremake.model.MovieDetail;
 

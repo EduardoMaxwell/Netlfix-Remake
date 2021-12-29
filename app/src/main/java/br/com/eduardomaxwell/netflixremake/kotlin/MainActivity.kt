@@ -16,6 +16,7 @@ import br.com.eduardomaxwell.netflixremake.model.Category
 import br.com.eduardomaxwell.netflixremake.model.Movie
 import br.com.eduardomaxwell.netflixremake.util.CategoryTask
 import br.com.eduardomaxwell.netflixremake.util.ImageDownloaderTask
+import com.bumptech.glide.Glide
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -101,8 +102,12 @@ class MainActivity : AppCompatActivity() {
         RecyclerView.ViewHolder(itemView) {
         val binding = MovieItemBinding.bind(itemView)
         fun bind(movie: Movie) {
-            ImageDownloaderTask(binding.ivCover)
-                .execute(movie.coverUrl)
+
+            Glide.with(itemView.context)
+                .load(movie.coverUrl)
+                .placeholder(R.drawable.placeholder_bg)
+                .into(binding.ivCover)
+
             binding.ivCover.setOnClickListener {
                 onClick?.invoke(movie)
             }

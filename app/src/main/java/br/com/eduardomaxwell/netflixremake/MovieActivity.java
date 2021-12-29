@@ -2,12 +2,9 @@ package br.com.eduardomaxwell.netflixremake;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -68,7 +65,7 @@ public class MovieActivity extends AppCompatActivity implements MovieDetailTask.
         binding.txtDescMovie.setText(movieDetail.getMovie().getDesc());
         binding.txtCastMovie.setText(movieDetail.getMovie().getCast());
 
-        adapter.setMovies(movieDetail.getMoviesSimilar());
+        adapter.setMovies(movieDetail.getSimilarMovies());
 
         ImageDownloaderTask imageDownloaderTask = new ImageDownloaderTask(binding.ivCover);
         imageDownloaderTask.setShadowEnabled(true);
