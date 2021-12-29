@@ -2,14 +2,12 @@ package br.com.eduardomaxwell.netflixremake.kotlin
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.OnReceiveContentListener
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import br.com.eduardomaxwell.netflixremake.MovieActivity
 import br.com.eduardomaxwell.netflixremake.R
 import br.com.eduardomaxwell.netflixremake.databinding.ActivityMainBinding
 import br.com.eduardomaxwell.netflixremake.databinding.CategoryItemBinding
