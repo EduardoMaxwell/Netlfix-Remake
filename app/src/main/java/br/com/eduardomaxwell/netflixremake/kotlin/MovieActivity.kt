@@ -23,8 +23,17 @@ class MovieActivity : AppCompatActivity() {
         intent.extras?.let {
             val id = it.getInt("id")
             val movieDetailTask = MovieDetailTask(this)
-            movieDetailTask.setMovieDetailLoader {
+            movieDetailTask.setMovieDetailLoader { movieDetail ->
+                binding.apply {
+                    txtMovieTitle.text = movieDetail.movie.title
+                    txtDescMovie.text = movieDetail.movie.desc
+                    txtCastMovie.text = getString(R.string.cast, movieDetail.movie.title)
 
+                    ImageDownloaderTask(binding.ivCover).apply {
+                        setShadowEnabled(true)
+                        execute(movieDetail.movie.coverUrl)
+                    }
+                }
             }
             movieDetailTask.execute("https://tiagoaguiar.co/api/netflix/$id")
         }
