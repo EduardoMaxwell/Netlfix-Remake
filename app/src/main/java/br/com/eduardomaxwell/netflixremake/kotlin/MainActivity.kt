@@ -2,8 +2,10 @@ package br.com.eduardomaxwell.netflixremake.kotlin
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.OnReceiveContentListener
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -42,32 +44,25 @@ class MainActivity : AppCompatActivity() {
 
     private inner class MainAdapter(val categories: MutableList<Category>) :
         RecyclerView.Adapter<CategoryHolder>() {
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryHolder {
-            return CategoryHolder(layoutInflater.inflate(R.layout.category_item, parent, false))
-        }
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryHolder =
+            CategoryHolder(layoutInflater.inflate(R.layout.category_item, parent, false))
 
-        override fun onBindViewHolder(holder: CategoryHolder, position: Int) {
-            val category = categories[position]
-            holder.bind(category)
-        }
+
+        override fun onBindViewHolder(holder: CategoryHolder, position: Int) =
+            holder.bind(categories[position])
 
         override fun getItemCount() = categories.size
 
     }
 
-    private inner class MovieAdapter(val movies: List<Movie>) :
+    private inner class MovieAdapter(
+        val movies: List<Movie>,
+        private val listener: ((Movie) -> Unit)
+    ) :
         RecyclerView.Adapter<MovieHolder>() {
 
-        val onClick: ((Int) -> Unit)? = { position ->
-            if (movies[position].id <= 3) {
-                val intent = Intent(this@MainActivity, MovieActivity::class.java)
-                intent.putExtra("id", movies[position].id)
-                startActivity(intent)
-            }
-        }
-
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieHolder {
-            return MovieHolder(layoutInflater.inflate(R.layout.movie_item, parent, false), onClick)
+            return MovieHolder(layoutInflater.inflate(R.layout.movie_item, parent, false), listener)
         }
 
         override fun onBindViewHolder(holder: MovieHolder, position: Int) {
@@ -82,21 +77,36 @@ class MainActivity : AppCompatActivity() {
     private inner class CategoryHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val binding = CategoryItemBinding.bind(itemView)
         fun bind(category: Category) {
-            binding.txtTitleCategory.text = category.name
-            binding.rvMovie.adapter = MovieAdapter(category.movies)
-            binding.rvMovie.layoutManager =
-                LinearLayoutManager(this@MainActivity, RecyclerView.HORIZONTAL, false)
+
+            binding.apply {
+                txtTitleCategory.text = category.name
+                rvMovie.adapter = MovieAdapter(category.movies) { movie ->
+                    if (movie.id > 3) {
+                        Toast.makeText(
+                            this@MainActivity,
+                            "Não foi implementado o clique para essa opção!",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        val intent = Intent(this@MainActivity, MovieActivity::class.java)
+                        intent.putExtra("id", movie.id)
+                        startActivity(intent)
+                    }
+                }
+                rvMovie.layoutManager =
+                    LinearLayoutManager(this@MainActivity, RecyclerView.HORIZONTAL, false)
+            }
         }
     }
 
-    private class MovieHolder(itemView: View, val onClick: ((Int) -> Unit)?) :
+    private class MovieHolder(itemView: View, val onClick: ((Movie) -> Unit)?) :
         RecyclerView.ViewHolder(itemView) {
         val binding = MovieItemBinding.bind(itemView)
         fun bind(movie: Movie) {
             ImageDownloaderTask(binding.ivCover)
                 .execute(movie.coverUrl)
             binding.ivCover.setOnClickListener {
-                onClick?.invoke(adapterPosition)
+                onClick?.invoke(movie)
             }
         }
     }
