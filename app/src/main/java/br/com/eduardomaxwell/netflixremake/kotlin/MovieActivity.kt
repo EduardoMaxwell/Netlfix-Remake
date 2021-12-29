@@ -5,15 +5,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import br.com.eduardomaxwell.netflixremake.R
 import br.com.eduardomaxwell.netflixremake.databinding.ActivityMovieBinding
+import br.com.eduardomaxwell.netflixremake.databinding.MovieItemBinding
 import br.com.eduardomaxwell.netflixremake.model.Movie
 import br.com.eduardomaxwell.netflixremake.util.ImageDownloaderTask
 import br.com.eduardomaxwell.netflixremake.util.MovieDetailTask
 
 class MovieActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMovieBinding
+    private lateinit var movieAdapter: MovieAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,6 +36,9 @@ class MovieActivity : AppCompatActivity() {
                         setShadowEnabled(true)
                         execute(movieDetail.movie.coverUrl)
                     }
+                    movieAdapter.movies.clear()
+                    movieAdapter.movies.addAll(movieDetail.moviesSimilar)
+                    movieAdapter.notifyDataSetChanged()
                 }
             }
             movieDetailTask.execute("https://tiagoaguiar.co/api/netflix/$id")
@@ -43,11 +49,14 @@ class MovieActivity : AppCompatActivity() {
             toolbar.setDisplayHomeAsUpEnabled(true)
             toolbar.setHomeAsUpIndicator(R.drawable.ic_arrow_back)
             toolbar.title = null
-
         }
+        val movies = arrayListOf<Movie>()
+        movieAdapter = MovieAdapter(movies)
+        binding.rvSimilar.adapter = movieAdapter
+        binding.rvSimilar.layoutManager = GridLayoutManager(this, 3)
     }
 
-    private inner class MovieAdapter(private val movies: MutableList<Movie>) :
+    private inner class MovieAdapter(val movies: MutableList<Movie>) :
         RecyclerView.Adapter<MovieHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieHolder =
@@ -62,7 +71,7 @@ class MovieActivity : AppCompatActivity() {
 
 
     private inner class MovieHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val binding = ActivityMovieBinding.bind(itemView)
+        private val binding = MovieItemBinding.bind(itemView)
 
         fun bind(movie: Movie) {
             binding.apply {
