@@ -2,6 +2,7 @@ package br.com.eduardomaxwell.netflixremake.kotlin
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
@@ -56,6 +57,14 @@ class MovieActivity : AppCompatActivity() {
         binding.rvSimilar.layoutManager = GridLayoutManager(this, 3)
     }
 
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> finish()
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
     private inner class MovieAdapter(val movies: MutableList<Movie>) :
         RecyclerView.Adapter<MovieHolder>() {
 
@@ -68,7 +77,6 @@ class MovieActivity : AppCompatActivity() {
         override fun getItemCount() = movies.size
 
     }
-
 
     private inner class MovieHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val binding = MovieItemBinding.bind(itemView)
