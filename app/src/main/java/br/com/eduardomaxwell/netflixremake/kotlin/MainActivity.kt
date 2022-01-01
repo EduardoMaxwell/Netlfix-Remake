@@ -1,5 +1,6 @@
 package br.com.eduardomaxwell.netflixremake.kotlin
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -12,11 +13,13 @@ import br.com.eduardomaxwell.netflixremake.R
 import br.com.eduardomaxwell.netflixremake.databinding.ActivityMainBinding
 import br.com.eduardomaxwell.netflixremake.databinding.CategoryItemBinding
 import br.com.eduardomaxwell.netflixremake.databinding.MovieItemBinding
+import br.com.eduardomaxwell.netflixremake.model.Categories
 import br.com.eduardomaxwell.netflixremake.model.Category
 import br.com.eduardomaxwell.netflixremake.model.Movie
-import br.com.eduardomaxwell.netflixremake.util.CategoryTask
-import br.com.eduardomaxwell.netflixremake.util.ImageDownloaderTask
 import com.bumptech.glide.Glide
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -32,13 +35,25 @@ class MainActivity : AppCompatActivity() {
         binding.recyclerMain.adapter = mainAdapter
         binding.recyclerMain.layoutManager = LinearLayoutManager(this)
 
-        val categoryTask = CategoryTask(this)
-        categoryTask.setCategoryLoader {
-            mainAdapter.categories.clear()
-            mainAdapter.categories.addAll(it)
-            mainAdapter.notifyDataSetChanged()
-        }
-        categoryTask.execute("https://tiagoaguiar.co/api/netflix/home")
+        retrofit().create(NetflixAPI::class.java)
+            .listCategories().enqueue(object : Callback<Categories> {
+                @SuppressLint("NotifyDataSetChanged")
+                override fun onResponse(call: Call<Categories>, response: Response<Categories>) {
+                    if (response.isSuccessful) {
+                        response.body()?.let {
+                            mainAdapter.categories.clear()
+                            mainAdapter.categories.addAll(it.categories)
+                            mainAdapter.notifyDataSetChanged()
+                        }
+                    }
+                }
+
+                override fun onFailure(call: Call<Categories>, t: Throwable) {
+                    Toast.makeText(this@MainActivity, t.message, Toast.LENGTH_SHORT).show()
+                }
+
+            })
+
     }
 
     private inner class MainAdapter(val categories: MutableList<Category>) :
