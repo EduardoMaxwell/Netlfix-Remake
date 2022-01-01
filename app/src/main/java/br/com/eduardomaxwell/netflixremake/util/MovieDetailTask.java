@@ -82,10 +82,10 @@ public class MovieDetailTask extends AsyncTask<String, Void, MovieDetail> {
 
     private MovieDetail getMovieDetail(JSONObject json) throws JSONException {
         int id = json.getInt("id");
+        String coverUrl = json.getString("cover_url");
         String title = json.getString("title");
         String desc = json.getString("desc");
         String cast = json.getString("cast");
-        String coverUrl = json.getString("cover_url");
 
         List<Movie> movies = new ArrayList<>();
         JSONArray movieArray = json.getJSONArray("movie");
@@ -101,7 +101,7 @@ public class MovieDetailTask extends AsyncTask<String, Void, MovieDetail> {
 
             movies.add(similar);
         }
-        Movie movie = new Movie(id, desc, coverUrl, title, cast);
+        Movie movie = new Movie(id, coverUrl, title, desc, cast);
 
         return new MovieDetail(movie, movies);
     }

@@ -38,18 +38,19 @@ class MovieActivity : AppCompatActivity() {
                 binding.apply {
                     txtMovieTitle.text = movieDetail.movie.title
                     txtDescMovie.text = movieDetail.movie.desc
-                    txtCastMovie.text = getString(R.string.cast, movieDetail.movie.title)
+                    txtCastMovie.text = getString(R.string.cast, movieDetail.movie.cast)
 
                     Glide.with(this@MovieActivity)
                         .load(movieDetail.movie.coverUrl)
                         .listener(object : RequestListener<Drawable> {
+
                             override fun onLoadFailed(
                                 e: GlideException?,
                                 model: Any?,
                                 target: Target<Drawable>?,
                                 isFirstResource: Boolean
                             ): Boolean {
-                                return true
+                                return false
                             }
 
                             override fun onResourceReady(
@@ -59,12 +60,12 @@ class MovieActivity : AppCompatActivity() {
                                 dataSource: DataSource?,
                                 isFirstResource: Boolean
                             ): Boolean {
-                                val drawable: LayerDrawable? = ContextCompat.getDrawable(
+                                val drawable: LayerDrawable = ContextCompat.getDrawable(
                                     baseContext,
                                     R.drawable.shadows
                                 ) as LayerDrawable
 
-                                drawable?.let {
+                                drawable.let {
                                     drawable.setDrawableByLayerId(R.id.cover_drawable, resource)
                                     (target as DrawableImageViewTarget).view.setImageDrawable(drawable)
                                 }
@@ -72,7 +73,6 @@ class MovieActivity : AppCompatActivity() {
                             }
 
                         })
-                        .placeholder(R.drawable.placeholder_bg)
                         .into(binding.ivCover)
 
                     movieAdapter.movies.clear()
